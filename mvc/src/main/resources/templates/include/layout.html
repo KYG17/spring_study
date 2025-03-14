@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<!-- layout.html을 만들시 html안에 이 html은! thymeleaf를 쓰고 애는 layout이라는 것을 선언 -->
+<html xmlns:th="http://www.thymeleaf.org" 
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<meta charset="UTF-8">
+<title>게시판</title>
+</head>
+<body>
+	<!-- th:replace안에 header의 위치 선언 :: 옆에 html안에 fragment에 사용한 별명 -->
+	<th:block th:replace="~{include/header :: headerLayout}"></th:block>	
+	<th:block th:replace="~{include/nav :: navLayout}"></th:block>	
+	<!-- content라고 쓰는 것은 이 부분은 페이지마다 바뀔 거에요 라고 선언하는 것 -->
+	<div layout:fragment="content"></div>
+</body>
+</html>
