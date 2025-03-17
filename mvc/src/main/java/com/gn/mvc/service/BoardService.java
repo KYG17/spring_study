@@ -1,12 +1,14 @@
 package com.gn.mvc.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.gn.mvc.dto.BoardDto;
+import com.gn.mvc.dto.PageDto;
 import com.gn.mvc.dto.SearchDto;
 import com.gn.mvc.entity.Board;
 import com.gn.mvc.repository.BoardRepository;
@@ -17,11 +19,56 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class BoardService {
+	
+	
+		//삭제
+		public int deleteBoard(Long id) {
+			int result = 0;
+			try {
+				Board target = repository.findById(id).orElse(null);
+				if(target != null) {
+					 repository.deleteById(id);
+				}
+				result = 1;
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+			
+			return result;
+		}
+	
+	
+	
+		//수정
+		public Board updateBoard(BoardDto param) {
+//			Board board = param.toEntity();
+//			
+//			Board result = repository.save(board);
+//			
+//			return new BoardDto().toDto(result);
+			Board result = null;
+			// 1. @Id를 쓴 필드를 기준으로 타겟 조회
+			Board target = repository.findById(param.getBoard_no()).orElse(null);
+			// 2. 타켓이 존재하는 경우 업데이트
+			if(target != null) {
+				result = repository.save(param.toEntity());
+			}
+			return result;
+		}
+	
+	
+	
 //		@Autowired
 //		BoardRepository repository;
 	
 		private final BoardRepository repository;
-	
+		
+		//단일조회
+		public Board selectBoardOne(Long id) {
+			return repository.findById(id).orElse(null);
+		}
+		
+		
 		public BoardDto createBoard(BoardDto dto) {
 			//1. 매개변수 dto -> entity로 변경		
 			Board param = dto.toEntity();
@@ -35,8 +82,23 @@ public class BoardService {
 		}
 		
 		//목록조회
-		public List<Board>SelectBoardAll(SearchDto searchDto){
+		public Page<Board>SelectBoardAll(SearchDto searchDto, PageDto pageDto){
+			
+			//pageable을 쓰면 sort을 쓰면 안댐
+//			Sort sort = Sort.by("regDate").descending();
+//			if(searchDto.getOrder_type() == 2) {
+//				sort = Sort.by("regDate").ascending();
+//			}
+			
+			//시작하는 데이터 번호, 한 페이지에 몇개씩,정렬
+			//jpa에서는 페이지 1 이 0으로 인식 그래서 -1 으로 해줘야한다
+			Pageable pageable = PageRequest.of(pageDto.getNowPage()-1, pageDto.getNumPerPage(), Sort.by("regDate").descending());
+			if(searchDto.getOrder_type()==2) {
+				pageable = PageRequest.of(pageDto.getNowPage()-1, pageDto.getNumPerPage(), Sort.by("regDate").ascending());
+			}			
+			//검색 창
 			Specification<Board> spec = (root,query,criteriaBuilder) -> null;
+			
 			if(searchDto.getSearch_type() == 1) {
 				spec = spec.and(BoardSpecification.boardTitleContains(searchDto.getSearch_text()));
 			}else if(searchDto.getSearch_type() == 2) {
@@ -45,7 +107,8 @@ public class BoardService {
 				spec = spec.and(BoardSpecification.boardTitleContains(searchDto.getSearch_text()))
 					.or(BoardSpecification.boardTitleContains(searchDto.getSearch_text()));
 			}
-			List<Board>list = repository.findAll(spec);
+			//findAll에 sort도 같이 넘겨주자
+			Page<Board>list = repository.findAll(spec,pageable);
 			return list;
 
 	

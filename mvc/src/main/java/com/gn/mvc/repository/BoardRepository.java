@@ -2,6 +2,8 @@ package com.gn.mvc.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -13,7 +15,8 @@ public interface BoardRepository extends JpaRepository<Board,Long>,JpaSpecificat
 	
 	
 	//3.Specification 사용
-	List<Board> findAll(Specification<Board> spec);
+	//paging할 때
+	Page<Board> findAll(Specification<Board> spec,Pageable pageable);
 	
 	
 	

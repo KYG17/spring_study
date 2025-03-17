@@ -1,18 +1,21 @@
 package com.gn.mvc.controller;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.gn.mvc.dto.BoardDto;
+import com.gn.mvc.dto.PageDto;
 import com.gn.mvc.dto.SearchDto;
 import com.gn.mvc.entity.Board;
 import com.gn.mvc.service.BoardService;
@@ -94,19 +97,81 @@ public class BoardController {
 	
 	//목록조회
 	@GetMapping("/board")
-	public String SelectBoardAll(Model model,SearchDto searchDto ) {
+	public String SelectBoardAll(Model model,SearchDto searchDto,PageDto pageDto ) {
+		
+		if(pageDto.getNowPage() == 0)  pageDto.setNowPage(1);
+		
 		//1.DB에서 목록 select
-		List<Board> resultlist = service.SelectBoardAll(searchDto);
+		Page<Board> resultlist = service.SelectBoardAll(searchDto,pageDto);
+		
+		pageDto.setTotalPage(resultlist.getTotalPages());
+		
 		//2.목록 Model에 등록
 		//model에 service에서 가져온 정보를 key value형식으로 전달
 		//3.list.html에 데이터 셋팅
 		model.addAttribute("boardList",resultlist); 
 		model.addAttribute("searchDto",searchDto);
-		
-		
-		
+		model.addAttribute("pageDto",pageDto);
+
 		return "board/list";
 	}
+	
+	//단일조회
+	@GetMapping("/board/{id}")
+	public String selectBoardOne(@PathVariable("id") Long id,Model model) {
+		logger.info("게시글 단일 조회 : " + id);
+		Board result = service.selectBoardOne(id);
+		model.addAttribute("board",result);
+		return "board/detail";
+	}
+	
+	//수정화면 전환
+	@GetMapping("/board/{id}/update")
+	public String updateBoardView(@PathVariable("id") Long id,Model model) {
+		Board board = service.selectBoardOne(id);
+		model.addAttribute("board", board);
+		return "board/update";
+	}
+	
+	//수정
+	@PostMapping("/board/{id}/update")
+	@ResponseBody
+	public Map<String,String> updateBoardApi(BoardDto param){
+		//1.BoardDto 출력(전달 확인)
+		logger.info("게시글 수정 : " + param);
+		//2.BoardService -> BoardRepository 게시글 수정
+		Map<String,String> resultMap = new HashMap<String,String>();
+		resultMap.put("res_code", "500");
+		resultMap.put("res_msg", "게시글 수정 실패");
+		Board dto = service.updateBoard(param);
+		//3.수정 결과 Entity가 null이 아니면 성공 그 외에는 실패
+		
+		if(dto != null) {
+			resultMap.put("res_code", "200");
+			resultMap.put("res_msg", "게시글 수정 성공");
+		}
+		
+		return resultMap;
+	}
+	
+	
+	//삭제
+	@DeleteMapping("/board/{id}")
+	@ResponseBody
+	public Map<String,String> deleteBoardApi(@PathVariable("id") Long id){
+		logger.info("게시글 삭제 : " + id);
+		Map<String,String> resultMap = new HashMap<String,String>();
+		resultMap.put("res_code", "500");
+		resultMap.put("res_msg", "게시글 수정 실패");
+		
+		int result = service.deleteBoard(id);
+		if(result > 0) {
+			resultMap.put("res_code", "200");
+			resultMap.put("res_msg", "게시글 삭제 성공");
+		}
+		
+		return resultMap;
+	} 
 	
 	
 	

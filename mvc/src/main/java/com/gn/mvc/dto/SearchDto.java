@@ -19,4 +19,6 @@ public class SearchDto {
 	//검색창 form 태그 안에 있는 name값들 -> select창과 검색창
 	private int search_type;
 	private String search_text;
+	//정렬 창
+	private int order_type;
 }
