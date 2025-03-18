@@ -13,11 +13,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.gn.mvc.dto.BoardDto;
 import com.gn.mvc.dto.PageDto;
 import com.gn.mvc.dto.SearchDto;
 import com.gn.mvc.entity.Board;
+import com.gn.mvc.service.AttachService;
 import com.gn.mvc.service.BoardService;
 
 import lombok.RequiredArgsConstructor;
@@ -42,6 +44,7 @@ public class BoardController {
 	
 	//3.생성자 주입 방법 + final -> 이 방법을 쓴다!!!!!!!! @RequiredArgsConstructor 사용
 	private final BoardService service;
+	private final AttachService attachService;
 
 	//	@Autowired --> @RequiredArgsConstructor 애를 사용하면 아래 메소드를 안 써도 된다..
 //	public BoardController(BoardService service) {
@@ -84,14 +87,25 @@ public class BoardController {
 			
 			resultMap.put("res_code", "500");
 			resultMap.put("res_msg", "게시글 등록 중 오류가 발생하였습니다");
-			System.out.println(dto);
-			//Service가 가지고 있는 createBoard메소드 호출
-			BoardDto result = service.createBoard(dto);
+			if(dto != null) {
+				resultMap.put("res_code", "200");
+				resultMap.put("res_msg", "게시글 등록 성공");
+				
+			}
+			//파일이 잘 넘어오는지 확인
+			for(MultipartFile mf:dto.getFiles()) {
+				attachService.uploadFile(mf);
+			}
 			
-			logger.debug("1 : " + result.toString());
-			logger.info("2 : " + result.toString());
-			logger.warn("3 : " + result.toString());
-			logger.error("4 : " + result.toString());
+			
+			//System.out.println(dto);
+			//Service가 가지고 있는 createBoard메소드 호출
+			//BoardDto result = service.createBoard(dto);
+			
+//			logger.debug("1 : " + result.toString());
+//			logger.info("2 : " + result.toString());			
+//			logger.warn("3 : " + result.toString());
+//			logger.error("4 : " + result.toString());
 			return resultMap;
 	}
 	
