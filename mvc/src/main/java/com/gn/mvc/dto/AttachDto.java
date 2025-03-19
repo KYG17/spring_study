@@ -1,5 +1,8 @@
 package com.gn.mvc.dto;
 
+import com.gn.mvc.entity.Attach;
+import com.gn.mvc.entity.Board;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,6 +24,15 @@ public class AttachDto {
 	private String new_name;
 	private String attach_path;
 	
+	public Attach toEntity() {
+		return Attach.builder()
+				.attachNo(atach_no)
+				.oriName(ori_name)
+				.newName(new_name)
+				.attachPath(attach_path)
+				.board(Board.builder().boardNo(board_no).build())
+				.build();
+	}
 	
 	
 	

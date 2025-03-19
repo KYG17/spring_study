@@ -29,6 +29,8 @@ public class BoardDto {
 	private LocalDateTime reg_date;
 	private LocalDateTime mod_date;
 	
+	private List<Long> delete_files;
+	
 	private List<MultipartFile> files;
 	//1.BoardDto -> Board(Entity)
 	public Board toEntity() {
