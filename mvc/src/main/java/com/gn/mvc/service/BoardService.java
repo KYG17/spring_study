@@ -63,15 +63,15 @@ public class BoardService {
 				// target은 boardNo
 				if (target != null) {
 					// 3. 파일이 존재하는 경우(=삭제하고자 하는)
-					if (param.getDelete_files() != null && !param.getDelete_files().isEmpty()) {
-						for (Long attach_no : param.getDelete_files()) {
-							// (1)메모리에서 파일 자체 삭제 
-							if (attachService.deleteFileData(attach_no) > 0) {
-								// (2)db에서 메타 데이터 삭제
-								attachService.deleteMetaData(attach_no);
-							}							
-						}
-					}
+//					if (param.getDelete_files() != null && !param.getDelete_files().isEmpty()) {
+//					for (Long attach_no : param.getDelete_files()) {
+//							// (1)메모리에서 파일 자체 삭제 
+//							if (attachService.deleteFileData(attach_no) > 0) {
+//								// (2)db에서 메타 데이터 삭제
+//								attachService.deleteMetaData(attach_no);
+//							}							
+//						}
+//					}
 					if(attachUpdateDto.size() != 0) {
 						for (AttachDto attachDto : attachUpdateDto) {
 							attachDto.setBoard_no(param.getBoard_no());
