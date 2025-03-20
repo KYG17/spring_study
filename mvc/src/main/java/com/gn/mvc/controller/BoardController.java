@@ -185,8 +185,8 @@ public class BoardController {
 	@ResponseBody
 	public Map<String, String> updateBoardApi(BoardDto param) {
 		// 1.BoardDto 출력(전달 확인)
-		logger.info("게시글 수정 : " + param);
-		logger.info("삭제 : " + param.getDelete_files() + "!!!!!!!!!!!!");
+//		logger.info("게시글 수정 : " + param);
+//		logger.info("삭제 : " + param.getDelete_files() + "!!!!!!!!!!!!");
 		// 2.BoardService -> BoardRepository 게시글 수정
 		Map<String, String> resultMap = new HashMap<String, String>();
 		resultMap.put("res_code", "500");
