@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<style>
+body {
+    font-family: 'Arial', sans-serif;
+    text-align: center;
+    background-color: #f8d7da;
+    color: #721c24;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+h1 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+}
+
+p {
+    font-size: 1.5rem;
+    margin-bottom: 30px;
+}
+
+.animation img {
+    width: 200px;
+    animation: shake 1.5s infinite;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    50% { transform: translateX(10px); }
+    75% { transform: translateX(-5px); }
+}
+
+.home-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    color: white;
+    background-color: #dc3545;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+.home-btn:hover {
+    background-color: #c82333;
+}
+
+</style>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>500 Forbidden</title>
+    <link th:href="@{/css/error.css}" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>🚫 500 FORBIDDEN 🚫</h1>
+        <p>죄송합니다. 해당 페이지에 접근할 권한이 없습니다.</p>
+        <div class="animation">
+            <img th:src="@{/images/forbidden.png}" alt="403 Forbidden">
+        </div>
+        <a th:href="@{/}" class="home-btn">홈으로 돌아가기</a>
+    </div>
+</body>
+</html>
