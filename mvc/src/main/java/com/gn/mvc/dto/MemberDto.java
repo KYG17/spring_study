@@ -24,7 +24,7 @@ public class MemberDto {
 	private String member_name;
 	private LocalDateTime reg_date;
 	private LocalDateTime mod_date;
-	
+	private String member_role;
 	//1.MemberDto -> Member(Entity)
 	//reg_date , mod_date 는 Entity로 바꿀때는 사용하지 않음
 	public Member toEntity() {
@@ -33,6 +33,7 @@ public class MemberDto {
 				.memberId(member_id)
 				.memberPw(member_pw)
 				.memberName(member_name)
+				.memberRole(member_role)
 				.build();
 	}
 	
