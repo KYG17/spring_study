@@ -28,6 +28,9 @@ public class ToDoDto {
 	private String new_ToDo;
 	private String flag;
 	
+	//html에 hidden으로 flag을 사용하지 않고
+	//DTO에 private String flag = "N"; 으로 추가
+	
 	public ToDo toEntity() {
 		return ToDo.builder()
 				.no(no)

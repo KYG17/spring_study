@@ -43,6 +43,7 @@ public class ToDoService {
 		
 		//검색 창
 		Specification<ToDo> spec =(root,query,criteriaBuilder) -> null;
+		//이 조건문은  Controller에서도 쓸 수 있다.
 		if (searchDto.getSearch_text() != null && !searchDto.getSearch_text().isEmpty()) {
 		    spec = spec.and(ToDoSpecification.todoContentContains(searchDto.getSearch_text()));
 		}
@@ -72,10 +73,23 @@ public class ToDoService {
 	
 	public ToDoDto updateFlag(Long id) {
 		ToDo target = repository.findById(id).orElse(null);
+		//target을 dto을 바꾸기
+//		ToDoDto dto = ToDoDto.builder()
+//					.no(target.getNo())
+//					.new_ToDo(target.getContent())
+//					.flag(target.getFlag())
+//					.build();
+		
+//		if(target != null){
+//		if("Y".equals(target.getFlag())) dto.setFlag("N");
+//		else dto.setFlag("Y")
+//		}
+//		return todoRepository.save(dto.toEntity());
+		
 		if(target != null) {
-			if(target.getFlag().equals("Y")) {
+			if("Y".equals(target.getFlag())) {
 				target.setFlag("N");				
-			}else if(target.getFlag().equals("N")) {
+			}else if("N".equals(target.getFlag())) {
 				target.setFlag("Y");
 			}
 			repository.save(target);

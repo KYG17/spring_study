@@ -1,80 +1,169 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" >
-<script th:src="@{/js/jquery-3.7.1.js}"></script>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>To-Do List</title>
+<script th:src="@{/js/jquery-3.7.1.js}"></script>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+        text-align: center;
+    }
+    .container {
+        width: 80%;
+        margin: 20px auto;
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+    .title {
+        color: #333;
+    }
+    .search-container {
+        margin-bottom: 20px;
+    }
+    .search-input {
+        padding: 10px;
+        width: 60%;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    .search-button {
+        padding: 10px 15px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .search-button:hover {
+        background-color: #218838;
+    }
+    .todo-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    .todo-table th, .todo-table td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: center;
+    }
+    .todo-table th {
+        background-color: #007bff;
+        color: white;
+    }
+    .btn-delete {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .btn-delete:hover {
+        background-color: #c82333;
+    }
+    .pagination {
+        margin-top: 20px;
+    }
+    .page-link {
+        margin: 5px;
+        padding: 5px 10px;
+        background-color: #007bff;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+    }
+    .page-link:hover {
+        background-color: #0056b3;
+    }
+    .add-title {
+        margin-top: 30px;
+    }
+    .todo-form {
+        margin-top: 10px;
+    }
+    .todo-input {
+        padding: 10px;
+        width: 50%;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    .todo-submit {
+        padding: 10px 15px;
+        background-color: #ffc107;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .todo-submit:hover {
+        background-color: #e0a800;
+    }
+</style>
 </head>
 <body>
+    <div class="container">
+        <h1 class="title">📌 To-Do List 📌</h1>
 
-	<!-- 검색창  -->
-	<div>
-		<form name="search_text" method="get" >
-		<label for="search_text">내용:</label>
-		<input type="text" name="search_text" id="search_text" placeholder="검색어를 입력하세요"
-		th:value="${searchDto.search_text}">
-		<input type="submit" value="검색">
-		</form>
-		
-		<br><br>
-		
-		
-		<!-- 목록 조회 -->
-		<table border="1">
-			<thead>
-				<tr>
-					<th>완료</th>
-					<th>번호</th>
-					<th>내용</th>
-					<th>삭제</th>
-				</tr>
-			</thead>
-			<tbody>
-				<!-- toDoList가 비어있으면 보여줄 데이터가 없음을 출력!  -->
-				<tr th:if="${#lists.isEmpty(todolist.content)} ">
-					<td colspan="4">🥹🥹🥹할 일이 없습니다🥹🥹🥹</td>
-				</tr>
-				<!-- toDoList안에 데이터가 있으면 -->
-				<tr th:if="${!#lists.isEmpty(todolist.content)}"
-					th:each="todo, todostatus : ${todolist}">		
-					<td><input type="checkbox" class="updateflag" th:attr="data-todo-no=${todo.no}"
-						th:checked="${todo.flag == 'Y'}"></td> 
-   					<td th:text="${(pageDto.nowPage-1)*(pageDto.numPerPage)+todostatus.count}">번호</td>
-    				<td th:text="${todo.content}">내용</td>
-					<td>
-						 <button type="button" class="deleteToDo" id="deleteToDo" th:attr="data-todo-no=${todo.no}">삭제</button>	 
-					</td>	
-				</tr>
+        <div class="search-container">
+            <form name="search_text" method="get" action="/">
+                <input type="text" name="search_text" id="search_text" placeholder="검색어를 입력하세요"
+                th:value="${searchDto.search_text}" class="search-input">
+                <input type="submit" value="검색" class="search-button">
+            </form>
+        </div>
 
-			</tbody>
-		</table>
-		<!-- 페이징관련 -->
-	</div>
-		<div th:if="${!#lists.isEmpty(todolist.content)}">
-			<div>
-				<a th:if="${pageDto.prev}" 
-				th:href="@{/(nowPage=${pageDto.pageBarStart-1},search_text=${searchDto.search_text})}">
-				&laquo;</a>
-				<a th:each="num : ${#numbers.sequence(pageDto.pageBarStart,pageDto.pageBarEnd)}" th:text="${num}" 
-				th:href="@{/(nowPage=${num},search_text=${searchDto.search_text})}">번호</a>
-				<a th:if="${pageDto.next}" th:href="@{/board(nowPage=${pageDto.pageBarEnd+1},search_text=${searchDto.search_text})}">&raquo;</a>
-			</div>	
-		</div>
-	
-	
-	
-	
-	
-	
-	<br>
-	<h2>할 일 추가</h2>
-	<form name="todolist" action="/todo" method="post">
-	<input type="hidden" name="flag" id="flag" value="N"> 	
-	<input type="text" name="new_ToDo" id="newToDo" placeholder="할일을 입력하세요">
-	<input type="submit" value="추가하기" > 
-	</form>
-	<script>
+        <table class="todo-table">
+            <thead>
+                <tr>
+                    <th>완료</th>
+                    <th>번호</th>
+                    <th>내용</th>
+                    <th>삭제</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:if="${#lists.isEmpty(todolist)}">
+                    <td colspan="4" class="no-data">🥹🥹🥹할 일이 없습니다🥹🥹🥹</td>
+                </tr>
+                <tr th:if="${!#lists.isEmpty(todolist)}" th:each="todo, todostatus : ${todolist}">
+                    <td><input type="checkbox" class="updateflag" th:attr="data-todo-no=${todo.no}"
+                        th:checked="${todo.flag == 'Y'}"></td>
+                    <td th:text="${(pageDto.nowPage-1)*(pageDto.numPerPage)+todostatus.count}">번호</td>
+                    <td th:text="${todo.content}">내용</td>
+                    <td><button type="button" class="deleteToDo btn-delete" th:attr="data-todo-no=${todo.no}">삭제</button></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="pagination" th:if="${!#lists.isEmpty(todolist)}">
+            <a th:if="${pageDto.prev}" class="page-link" th:href="@{/(nowPage=${pageDto.pageBarStart-1},search_text=${searchDto.search_text})}">&laquo;</a>
+            <a th:each="num : ${#numbers.sequence(pageDto.pageBarStart,pageDto.pageBarEnd)}" th:text="${num}" class="page-link"
+               th:href="@{/(nowPage=${num},search_text=${searchDto.search_text})}">번호</a>
+            <a th:if="${pageDto.next}" class="page-link" th:href="@{/(nowPage=${pageDto.pageBarEnd+1},search_text=${searchDto.search_text})}">&raquo;</a>
+        </div>
+
+        <h2 class="add-title">할 일 추가</h2>
+        <form name="todolist" action="/todo" method="post" class="todo-form">
+            <input type="hidden" name="flag" id="flag" value="N">  
+            <input type="text" name="new_ToDo" id="newToDo" placeholder="할일을 입력하세요" class="todo-input">
+            <input type="submit" value="추가하기" class="todo-submit"> 
+        </form>
+    </div>
+    <script>
         const form = document.todolist;
+        
+        
+        //화살표 함수를 안할시!
+        //form.addEventListener('submit',function(e){
+        	//e.preventDefault();
+        //})
         
         form.addEventListener('submit', (e) => {
             e.preventDefault(); 
@@ -121,7 +210,7 @@
 					.then(data => {
 						alert(data.res_msg);
 						if(data.res_code == 200){
-							location.reload();
+							location.href="/";
 						}
 					})
 				}
@@ -138,15 +227,12 @@
         		.then(response => response.json())
         		.then(data => {
         			if(data.res_code == 500){
-        				alert('정상적으로 변경 실패');
+        				alert(data.res_msg);
         			}
         		})
         	})
         })
         
     </script>
-</body>
-	
-
 </body>
 </html>

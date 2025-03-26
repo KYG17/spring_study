@@ -55,11 +55,16 @@ public class ToDoController {
 	@GetMapping("/")
 	public String selectlistAll(Model model, SearchDto searchDto, PageDto pageDto) {
 		
+		
+	
 		if(pageDto.getNowPage() == 0) pageDto.setNowPage(1);
 		
 		Page <ToDo> result = service.selectlistAll(searchDto,pageDto);
 		
-		
+		//페이징 처리를 위해
+//		if(result.isEmpty()) {
+//			result = null;
+//		}
 	
 		
 		pageDto.setTotalPage(result.getTotalPages());
@@ -67,7 +72,12 @@ public class ToDoController {
 //		System.out.println(searchDto);
 //		System.out.println(result);
 		
-		model.addAttribute("todolist", result);
+		//page처리를 위해 ! 데이터가 없을 시에 조건문이 성립이 안됨 그래서 result.getContent로 보냄
+		//그럼 home.html에 th:if="${#lists.isEmpty(todolist)} " 사용할 수 있음
+		// => 페이징 , 그리고 list 에 조건문이 성립이 된다
+		//model.addAttribute("todolist", result.getContent());
+		
+		model.addAttribute("todolist", result.getContent());
 		model.addAttribute("searchDto",searchDto);
 		model.addAttribute("pageDto",pageDto);
 		
