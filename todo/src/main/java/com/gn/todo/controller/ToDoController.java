@@ -1,6 +1,7 @@
 package com.gn.todo.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.data.domain.Page;
@@ -15,7 +16,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.gn.todo.dto.PageDto;
 import com.gn.todo.dto.SearchDto;
 import com.gn.todo.dto.ToDoDto;
+import com.gn.todo.entity.Attach;
 import com.gn.todo.entity.ToDo;
+import com.gn.todo.service.AttachService;
 import com.gn.todo.service.ToDoService;
 
 import lombok.RequiredArgsConstructor;
@@ -26,6 +29,7 @@ public class ToDoController {
 	
 	
 	private final ToDoService service;
+	private final AttachService attachService;
 
 	
 	//할 일 등록하기
@@ -68,6 +72,11 @@ public class ToDoController {
 	
 		
 		pageDto.setTotalPage(result.getTotalPages());
+		
+		
+		List<Attach> attachList = attachService.selectAttachList();
+		model.addAttribute("attachList",attachList);
+		
 		
 //		System.out.println(searchDto);
 //		System.out.println(result);

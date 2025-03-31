@@ -108,7 +108,62 @@
 </style>
 </head>
 <body>
-    <div class="container">
+
+
+	<h1>파일 목록</h1>
+	<form name="create_file_form">
+		<input type="file" name="files" multiple> <input type="submit"
+			value="업로드">
+	</form>
+	<br>
+	<!--  테이블 자체가 attachList가 있어야 보여지는 테이블 -->
+	<table border="1" th:if="${!#lists.isEmpty(attachList)}">
+		<thead>
+			<tr>
+				<th>번호</th>
+				<th>다운로드</th>
+			</tr>
+		</thead>	
+	<tbody>
+		<tr th:each= "attach, attachCount : ${attachList}">
+			<td th:text="${attachCount.count}">번호(Status의 count사용)</td>
+			<td>
+				<a th:text="${attach.oriName}" th:onclick="|location.href='@{/download/{id}(id=${attach.attachNo})}'|">
+					파일의 명칭
+				</a>
+			</td>
+		</tr>
+		
+	</tbody>
+	</table>
+	
+	<script>
+		const filedata = document.create_file_form;
+		const files = filedata.files;
+		filedata.addEventListener('submit',function(e){
+			e.preventDefault();
+			const filepayLoad = new FormData(filedata);
+			if(!files.value){
+				alert('파일을 등록해주세요')
+			}else{
+			fetch("/attach/create",{
+				method: 'post',
+				body : filepayLoad
+			})
+			.then(response => response.json())
+			.then(data => {
+				alert(data.res_msg);
+				if(data.res_code == 200){
+					location.href = "/";
+				}
+			})				
+		}
+	})
+	
+	</script>
+
+
+	<div class="container">
         <h1 class="title">📌 To-Do List 📌</h1>
 
         <div class="search-container">
@@ -117,8 +172,8 @@
                 th:value="${searchDto.search_text}" class="search-input">
                 <input type="submit" value="검색" class="search-button">
             </form>
-        </div>
-
+     </div>
+     
         <table class="todo-table">
             <thead>
                 <tr>
@@ -156,6 +211,7 @@
             <input type="submit" value="추가하기" class="todo-submit"> 
         </form>
     </div>
+    
     <script>
         const form = document.todolist;
         
