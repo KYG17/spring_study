@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>To-Do List</title>
+<title>파일 목록 & To-Do List</title>
 <script th:src="@{/js/jquery-3.7.1.js}"></script>
 <style>
     body {
@@ -20,81 +20,44 @@
         border-radius: 10px;
         box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     }
-    .title {
+    h1 {
         color: #333;
     }
-    .search-container {
-        margin-bottom: 20px;
+    .table-container {
+        margin-top: 20px;
     }
-    .search-input {
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: center;
+    }
+    th {
+        background-color: #007bff;
+        color: white;
+    }
+    .btn-delete, .download-link {
+        padding: 5px 10px;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .btn-delete { background-color: #dc3545; }
+    .btn-delete:hover { background-color: #c82333; }
+    .download-link { background-color: #28a745; text-decoration: none; }
+    .download-link:hover { background-color: #218838; }
+    .todo-input, .file-input {
         padding: 10px;
         width: 60%;
         border: 1px solid #ccc;
         border-radius: 5px;
     }
-    .search-button {
-        padding: 10px 15px;
-        background-color: #28a745;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-    .search-button:hover {
-        background-color: #218838;
-    }
-    .todo-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-    }
-    .todo-table th, .todo-table td {
-        border: 1px solid #ddd;
-        padding: 10px;
-        text-align: center;
-    }
-    .todo-table th {
-        background-color: #007bff;
-        color: white;
-    }
-    .btn-delete {
-        background-color: #dc3545;
-        color: white;
-        border: none;
-        padding: 5px 10px;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-    .btn-delete:hover {
-        background-color: #c82333;
-    }
-    .pagination {
-        margin-top: 20px;
-    }
-    .page-link {
-        margin: 5px;
-        padding: 5px 10px;
-        background-color: #007bff;
-        color: white;
-        text-decoration: none;
-        border-radius: 5px;
-    }
-    .page-link:hover {
-        background-color: #0056b3;
-    }
-    .add-title {
-        margin-top: 30px;
-    }
-    .todo-form {
-        margin-top: 10px;
-    }
-    .todo-input {
-        padding: 10px;
-        width: 50%;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-    }
-    .todo-submit {
+    .todo-submit, .file-submit {
         padding: 10px 15px;
         background-color: #ffc107;
         color: white;
@@ -102,193 +65,119 @@
         border-radius: 5px;
         cursor: pointer;
     }
-    .todo-submit:hover {
-        background-color: #e0a800;
-    }
+    .todo-submit:hover { background-color: #e0a800; }
 </style>
 </head>
 <body>
-
-
-	<h1>파일 목록</h1>
-	<form name="create_file_form">
-		<input type="file" name="files" multiple> <input type="submit"
-			value="업로드">
-	</form>
-	<br>
-	<!--  테이블 자체가 attachList가 있어야 보여지는 테이블 -->
-	<table border="1" th:if="${!#lists.isEmpty(attachList)}">
-		<thead>
-			<tr>
-				<th>번호</th>
-				<th>다운로드</th>
-			</tr>
-		</thead>	
-	<tbody>
-		<tr th:each= "attach, attachCount : ${attachList}">
-			<td th:text="${attachCount.count}">번호(Status의 count사용)</td>
-			<td>
-				<a th:text="${attach.oriName}" th:onclick="|location.href='@{/download/{id}(id=${attach.attachNo})}'|">
-					파일의 명칭
-				</a>
-			</td>
-		</tr>
-		
-	</tbody>
-	</table>
-	
-	<script>
-		const filedata = document.create_file_form;
-		const files = filedata.files;
-		filedata.addEventListener('submit',function(e){
-			e.preventDefault();
-			const filepayLoad = new FormData(filedata);
-			if(!files.value){
-				alert('파일을 등록해주세요')
-			}else{
-			fetch("/attach/create",{
-				method: 'post',
-				body : filepayLoad
-			})
-			.then(response => response.json())
-			.then(data => {
-				alert(data.res_msg);
-				if(data.res_code == 200){
-					location.href = "/";
-				}
-			})				
-		}
-	})
-	
-	</script>
-
-
-	<div class="container">
-        <h1 class="title">📌 To-Do List 📌</h1>
-
-        <div class="search-container">
-            <form name="search_text" method="get" action="/">
-                <input type="text" name="search_text" id="search_text" placeholder="검색어를 입력하세요"
-                th:value="${searchDto.search_text}" class="search-input">
-                <input type="submit" value="검색" class="search-button">
-            </form>
-     </div>
-     
-        <table class="todo-table">
-            <thead>
-                <tr>
-                    <th>완료</th>
-                    <th>번호</th>
-                    <th>내용</th>
-                    <th>삭제</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:if="${#lists.isEmpty(todolist)}">
-                    <td colspan="4" class="no-data">🥹🥹🥹할 일이 없습니다🥹🥹🥹</td>
-                </tr>
-                <tr th:if="${!#lists.isEmpty(todolist)}" th:each="todo, todostatus : ${todolist}">
-                    <td><input type="checkbox" class="updateflag" th:attr="data-todo-no=${todo.no}"
-                        th:checked="${todo.flag == 'Y'}"></td>
-                    <td th:text="${(pageDto.nowPage-1)*(pageDto.numPerPage)+todostatus.count}">번호</td>
-                    <td th:text="${todo.content}">내용</td>
-                    <td><button type="button" class="deleteToDo btn-delete" th:attr="data-todo-no=${todo.no}">삭제</button></td>
-                </tr>
-            </tbody>
-        </table>
-
-        <div class="pagination" th:if="${!#lists.isEmpty(todolist)}">
-            <a th:if="${pageDto.prev}" class="page-link" th:href="@{/(nowPage=${pageDto.pageBarStart-1},search_text=${searchDto.search_text})}">&laquo;</a>
-            <a th:each="num : ${#numbers.sequence(pageDto.pageBarStart,pageDto.pageBarEnd)}" th:text="${num}" class="page-link"
-               th:href="@{/(nowPage=${num},search_text=${searchDto.search_text})}">번호</a>
-            <a th:if="${pageDto.next}" class="page-link" th:href="@{/(nowPage=${pageDto.pageBarEnd+1},search_text=${searchDto.search_text})}">&raquo;</a>
+    <div class="container">
+        <h1>📂 파일 목록</h1>
+        <form name="create_file_form">
+            <input type="file" name="files" multiple class="file-input">
+            <input type="submit" value="업로드" class="file-submit">
+        </form>
+        
+        <div class="table-container" th:if="${!#lists.isEmpty(attachList)}">
+            <table>
+                <thead>
+                    <tr>
+                        <th>번호</th>
+                        <th>다운로드</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="attach, attachCount : ${attachList}">
+                        <td th:text="${attachCount.count}"></td>
+                        <td>
+                            <a th:text="${attach.oriName}" 
+                               th:href="@{/download/{id}(id=${attach.attachNo})}" 
+                               class="download-link">
+                                파일 다운로드
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
-
-        <h2 class="add-title">할 일 추가</h2>
-        <form name="todolist" action="/todo" method="post" class="todo-form">
-            <input type="hidden" name="flag" id="flag" value="N">  
-            <input type="text" name="new_ToDo" id="newToDo" placeholder="할일을 입력하세요" class="todo-input">
+        
+        <h1>📝 To-Do List</h1>
+        <form name="todolist" action="/todo" method="post">
+            <input type="hidden" name="flag" value="N">  
+            <input type="text" name="new_ToDo" placeholder="할 일을 입력하세요" class="todo-input">
             <input type="submit" value="추가하기" class="todo-submit"> 
         </form>
+        
+        <div class="table-container" th:if="${!#lists.isEmpty(todolist)}">
+            <table>
+                <thead>
+                    <tr>
+                        <th>완료</th>
+                        <th>번호</th>
+                        <th>내용</th>
+                        <th>삭제</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="todo, todostatus : ${todolist}">
+                        <td><input type="checkbox" class="updateflag" th:attr="data-todo-no=${todo.no}" th:checked="${todo.flag == 'Y'}"></td>
+                        <td th:text="${todostatus.count}"></td>
+                        <td th:text="${todo.content}"></td>
+                        <td><button type="button" class="deleteToDo btn-delete" th:attr="data-todo-no=${todo.no}">삭제</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
     
     <script>
-        const form = document.todolist;
+        document.create_file_form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            if (!this.files.value) {
+                alert('파일을 등록해주세요');
+                return;
+            }
+            fetch("/attach/create", {
+                method: 'post',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.res_msg);
+                if (data.res_code == 200) location.reload();
+            });
+        });
         
-        
-        //화살표 함수를 안할시!
-        //form.addEventListener('submit',function(e){
-        	//e.preventDefault();
-        //})
-        
-        form.addEventListener('submit', (e) => {
-            e.preventDefault(); 
-            
-            let content = form.new_ToDo.value;
-            /* input type text 출력" */
-            //console.log(content);
-            
-            //유효성 검사 
+        document.todolist.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const content = this.new_ToDo.value;
             if (!content) {
-                alert('할 일을 적어주세요!');
-            } else {
-                const payload = new FormData(form); 
-                
-                fetch("/todo", {
-                    method: 'post',
-                    body: payload
-                })
+                alert('할 일을 입력해주세요!');
+                return;
+            }
+            const payload = new FormData(this);
+            fetch("/todo", {
+                method: 'post',
+                body: payload
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.res_msg);
+                if (data.res_code == 200) location.reload();
+            });
+        });
+        
+        $(function() {
+            $('.deleteToDo').on('click', function() {
+                const deleteNo = $(this).data('todo-no');
+                if (!confirm("목록에서 지우시겠습니까?")) return;
+                fetch('/todo/' + deleteNo, { method: 'delete' })
                 .then(response => response.json())
                 .then(data => {
                     alert(data.res_msg);
-                    if (data.res_code == 200) {
-                        location.reload();
-                    }
-                })
-              
-            }
+                    if (data.res_code == 200) location.reload();
+                });
+            });
         });
-        
-		
-        //PK값의 정보를 가져와서 삭제하기
-		$(function(){
-			$('.deleteToDo').on('click',function(){
-				const deleteNo = $(this).data('todo-no');
-				/* console.log(deleteNo); */
-				const perMission = confirm("목록에서 지우시겠습니까?")
-				if(perMission == false){
-					alert('삭제를 취소하셨습니다')
-				}else{
-					fetch('/todo/'+deleteNo,{
-						method: 'delete'
-					})
-					.then(response => response.json())
-					.then(data => {
-						alert(data.res_msg);
-						if(data.res_code == 200){
-							location.href="/";
-						}
-					})
-				}
-			})
-		})
-        
-        $(function(){
-        	$('.updateflag').on('change',function(){
-        		const updateFlag = $(this).data('todo-no');
-        		//console.log(updateFlag);
-        		fetch('/todo/'+updateFlag,{
-        			method: 'post'
-        		})
-        		.then(response => response.json())
-        		.then(data => {
-        			if(data.res_code == 500){
-        				alert(data.res_msg);
-        			}
-        		})
-        	})
-        })
-        
     </script>
 </body>
 </html>
