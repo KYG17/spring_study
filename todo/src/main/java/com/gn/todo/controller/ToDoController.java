@@ -36,7 +36,7 @@ public class ToDoController {
 	@PostMapping("/todo")
 	@ResponseBody
 	public Map<String,String> createNewToDo(ToDoDto todo , Model model){
-		System.out.println("ci/cd 구성");
+		System.out.println("ci/cd 구성 수정중");
 		Map<String,String> result = new HashMap<String,String>();
 		result.put("res_code", "500");
 		result.put("res_msg", "할 일 추가 등록을 실패했습니다");
