@@ -89,7 +89,7 @@
                         <td th:text="${attachCount.count}"></td>
                         <td>
                             <a th:text="${attach.oriName}" 
-                               th:href="@{/download/{id}(id=${attach.attachNo})}" 
+                               th:href="@{/s3/download/{id}(id=${attach.attachNo})}" 
                                class="download-link">
                                 파일 다운로드
                             </a>
@@ -110,7 +110,7 @@
             <table>
                 <thead>
                     <tr>
-                        <th>완료</th>
+                        <th>완료 </th>
                         <th>번호</th>
                         <th>내용</th>
                         <th>삭제</th>
@@ -136,7 +136,7 @@
                 alert('파일을 등록해주세요');
                 return;
             }
-            fetch("/attach/create", {
+            fetch("/s3/upload", {
                 method: 'post',
                 body: formData
             })
